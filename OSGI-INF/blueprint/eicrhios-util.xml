@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
+
+	<cm:property-placeholder persistent-id="idv.kaomk.eicrhios.utils"
+		update-strategy="reload">
+		<cm:default-properties>
+			<cm:property name="encrypt.password" value="eicrhios" />
+		</cm:default-properties>
+	</cm:property-placeholder>
+	
+	<bean id="encryptor" class="idv.kaomk.eicrhios.utils.encrypt.Encryptor">
+		<property name="password" value="${encrypt.password}"/>
+	</bean>
+	
+	<service id="encryptConfigInstallService" auto-export="interfaces">
+		<bean class="idv.kaomk.eicrhios.utils.encrypt.EncryptConfigInstaller">
+			<argument ref="blueprintBundleContext" />
+			<argument ref="configurationAdmin" />
+			<property name="encryptor" ref="encryptor" />
+		</bean>
+	</service>
+
+	<reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin"
+		availability="optional" timeout="30000" />
+
+	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+		<command name="jasypt/encryption">
+			<action class="idv.kaomk.eicrhios.utils.encrypt.EncryptionAction">
+				<property name="encryptor" ref="encryptor" />
+			</action>
+		</command>
+	</command-bundle>
+</blueprint>
