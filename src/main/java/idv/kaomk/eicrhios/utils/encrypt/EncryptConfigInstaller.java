@@ -31,6 +31,7 @@ public class EncryptConfigInstaller implements ArtifactInstaller,
 	private static final String DISABLE_CONFIG_SAVE = "felix.fileinstall.filename";
 	private static final String FILENAME = "felix.fileinstall.filename";
 	private static final String ENCRYPT_FIELDS = "eicrhios.utils.encryptfields";
+	private static final String CORRUPTED_VALUE = "this property is corrupted.";
 
 	private ConfigurationAdmin mConfigAdmin;
 	private final BundleContext mContext;
@@ -247,7 +248,7 @@ public class EncryptConfigInstaller implements ArtifactInstaller,
 					logger.warn(String.format(
 							"decrypt failed for filed: %s , value: %s",
 							fieldKey, prop.get(fieldKey)));
-					prop.remove(fieldKey);
+					prop.put(fieldKey, CORRUPTED_VALUE);
 				}
 			}
 		}
@@ -260,7 +261,7 @@ public class EncryptConfigInstaller implements ArtifactInstaller,
 
 		String[] encryptFields = prop.get(ENCRYPT_FIELDS).split("[\\s,]");
 		for (String fieldKey : encryptFields) {
-			if (prop.containsKey(fieldKey)) {
+			if (prop.containsKey(fieldKey) && !CORRUPTED_VALUE.equals(prop.get(fieldKey))) {
 				prop.put(fieldKey, mEncryptor.encrypt(prop.get(fieldKey)));
 			}
 		}
