@@ -22,3 +22,4 @@ public class Encryptor {
 		return endecrypt(false, text);
 	}
 }
+ 
