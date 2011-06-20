@@ -4,15 +4,45 @@
 	<parent>
 		<artifactId>eicrhios</artifactId>
 		<groupId>idv.kaomk.eicrhios</groupId>
-		<version>1.0.0</version>
+		<version>1.0.1</version>
 	</parent>
 	<groupId>idv.kaomk.eicrhios</groupId>
 	<artifactId>idv.kaomk.eicrhios.utils</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>bundle</packaging>
 	<name>Eicrhios :: Utils</name>
+	<description>Utils module for Eicrhios</description>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>net.sf.jacob-project</groupId>
+									<artifactId>jacob</artifactId>
+									<version>1.14.3</version>
+									<type>dll</type>
+									<classifier>x86</classifier>
+									<outputDirectory>${basedir}/target/classes</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
@@ -23,24 +53,35 @@
 							org.apache.felix.utils.collections,
             			</Private-Package>
 						<Import-Package>
+							!com.jacob.test,
 							org.apache.felix.service.command,
 							org.apache.felix.gogo.commands,
 							org.apache.karaf.shell.console,
 							*;resolution:=optional
 						</Import-Package>
-<!-- 						<Embed-Transitive>false</Embed-Transitive> -->
-<!-- 						<Embed-Dependency> -->
-<!-- 							jasypt;scope=compile;type=jar -->
-<!-- 						</Embed-Dependency> -->
-<!-- 						<Embed-Dependency> -->
-<!-- 						org.jasypt.util.text;inline="org/jasypt/util/text/BasicTextEncryptor*.*", -->
-<!-- 						org.apache.felix.configadmin;inline="org/apache/felix/cm/file/ConfigurationHandler.*", -->
-<!-- 						org.apache.felix.utils.collections;inline="org/apache/felix/utils/collections/DictionaryAsMap*.*" -->
-<!-- 						</Embed-Dependency> -->
+						<Export-Package>
+							com.jacob.activeX,
+							com.jacob.com
+						</Export-Package>
+						<Embed-Dependency>
+							jacob;scope=compile|runtime;type=jar
+						</Embed-Dependency>
+						<Bundle-NativeCode>
+							jacob-1.14.3-x86.dll;osname=Win32;processor=x86,
+							*
+						</Bundle-NativeCode>
 					</instructions>
 				</configuration>
 			</plugin>
 		</plugins>
+		<resources>
+			<resource>
+				<directory>${basedir}/target/classes</directory>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</resource>
+		</resources>
 	</build>
 	<dependencies>
 		<dependency>
@@ -51,7 +92,6 @@
 			<groupId>org.jasypt</groupId>
 			<artifactId>jasypt</artifactId>
 			<version>1.7</version>
-<!-- 			<classifier>lite</classifier> -->
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -77,6 +117,19 @@
 					<artifactId>org.osgi.compendium</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jacob-project</groupId>
+			<artifactId>jacob</artifactId>
+			<version>${jacob.version}</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jacob-project</groupId>
+			<artifactId>jacob</artifactId>
+			<version>${jacob.version}</version>
+			<classifier>x86</classifier>
+			<type>dll</type>
 		</dependency>
 	</dependencies>
 </project>
